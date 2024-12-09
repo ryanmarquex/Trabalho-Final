@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Primeiro trabalho final",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/ryanmarquex/Trabalho-Final/issues"
   },
-  "homepage": "https://github.com/ryanmarquex/Trabalho-Final#readme"
+  "homepage": "https://github.com/ryanmarquex/Trabalho-Final#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
