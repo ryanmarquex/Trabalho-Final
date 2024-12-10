@@ -6,9 +6,9 @@ import cookieParser from 'cookie-parser';
 const app = express();
 const PORT = 3000;
 
-// Dados em memória
+// Dados em memória (substitua por banco de dados em produção)
 const data = {
-    users: [], // { name, birthDate, nickname, password }
+    users: [], // { name, email, birthDate, nickname, password }
     messages: [] // { user, message, timestamp }
 };
 
@@ -23,7 +23,7 @@ app.use(session({
     cookie: { maxAge: 30 * 60 * 1000 } // Sessão válida por 30 minutos
 }));
 
-// Página inicial: Cadastro de Usuários e Login
+// Página inicial com Cadastro de Usuários e Login
 app.get('/', (req, res) => {
     if (req.session.loggedIn) {
         return res.redirect('/menu');
@@ -34,6 +34,8 @@ app.get('/', (req, res) => {
         <form method="POST" action="/cadastrarUsuario">
             <label>Nome:</label>
             <input type="text" name="name" required>
+            <label>Email:</label>
+            <input type="email" name="email" required>
             <label>Data de Nascimento:</label>
             <input type="date" name="birthDate" required>
             <label>Nickname:</label>
@@ -55,8 +57,8 @@ app.get('/', (req, res) => {
 
 // Cadastro de usuários
 app.post('/cadastrarUsuario', (req, res) => {
-    const { name, birthDate, nickname, password } = req.body;
-    if (!name || !birthDate || !nickname || !password) {
+    const { name, email, birthDate, nickname, password } = req.body;
+    if (!name || !email || !birthDate || !nickname || !password) {
         return res.status(400).send('Todos os campos são obrigatórios!');
     }
 
@@ -65,10 +67,11 @@ app.post('/cadastrarUsuario', (req, res) => {
         return res.status(409).send('Nickname já cadastrado!');
     }
 
-    data.users.push({ name, birthDate, nickname, password });
+    data.users.push({ name, email, birthDate, nickname, password });
     res.send(`
         <h1>Usuário cadastrado com sucesso!</h1>
-        <a href="/">Voltar para Login</a>
+        <a href="/">Voltar para Login</a><br>
+        <a href="/usuariosCadastrados">Ver usuários cadastrados</a>
     `);
 });
 
@@ -90,7 +93,7 @@ app.post('/login', (req, res) => {
     }
 });
 
-// Menu principal
+// Menu
 app.get('/menu', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/');
@@ -100,7 +103,22 @@ app.get('/menu', (req, res) => {
         <h1>Bem-vindo, ${req.session.user}!</h1>
         <p>Último acesso: ${lastAccess}</p>
         <a href="/batePapo">Ir para Bate-papo</a><br>
+        <a href="/usuariosCadastrados">Ver usuários cadastrados</a><br>
         <form method="POST" action="/logout"><button type="submit">Logout</button></form>
+    `);
+});
+
+// Visualizar usuários cadastrados
+app.get('/usuariosCadastrados', (req, res) => {
+    if (!req.session.loggedIn) {
+        return res.redirect('/');
+    }
+    res.send(`
+        <h1>Usuários Cadastrados</h1>
+        <ul>
+            ${data.users.map(u => `<li>${u.nickname} (${u.name}, ${u.email}, ${u.birthDate})</li>`).join('')}
+        </ul>
+        <a href="/menu">Voltar ao menu</a>
     `);
 });
 
