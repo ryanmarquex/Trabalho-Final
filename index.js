@@ -6,13 +6,13 @@ import cookieParser from 'cookie-parser';
 const app = express();
 const PORT = 3000;
 
-
+// Dados em memória (substitua por banco de dados em produção)
 const data = {
-    users: [], 
-    messages: [] 
+    users: [], // { name, email, birthDate, nickname, password }
+    messages: [] // { user, message, timestamp }
 };
 
-
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -20,10 +20,10 @@ app.use(session({
     secret: 'chatroom_secret',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 30 * 60 * 1000 } 
+    cookie: { maxAge: 30 * 60 * 1000 } // Sessão válida por 30 minutos
 }));
 
-
+// Página inicial com Cadastro de Usuários e Login
 app.get('/', (req, res) => {
     if (req.session.loggedIn) {
         return res.redirect('/menu');
@@ -55,11 +55,11 @@ app.get('/', (req, res) => {
     `);
 });
 
-
+// Cadastro de usuários
 app.post('/cadastrarUsuario', (req, res) => {
     const { name, email, birthDate, nickname, password } = req.body;
 
-    
+    // Validação dos campos
     if (!name || !email || !birthDate || !nickname || !password) {
         return res.status(400).send('Todos os campos são obrigatórios!');
     }
@@ -98,7 +98,7 @@ app.post('/cadastrarUsuario', (req, res) => {
     `);
 });
 
-
+// Login
 app.post('/login', (req, res) => {
     const { nickname, password } = req.body;
     const user = data.users.find(u => u.nickname === nickname && u.password === password);
@@ -116,7 +116,7 @@ app.post('/login', (req, res) => {
     }
 });
 
-
+// Menu
 app.get('/menu', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/');
@@ -131,7 +131,7 @@ app.get('/menu', (req, res) => {
     `);
 });
 
-
+// Visualizar usuários cadastrados
 app.get('/usuariosCadastrados', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/');
@@ -145,13 +145,13 @@ app.get('/usuariosCadastrados', (req, res) => {
     `);
 });
 
-
+// Logout
 app.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
-
+// Bate-papo
 app.get('/batePapo', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/');
@@ -189,7 +189,7 @@ app.post('/postarMensagem', (req, res) => {
     res.redirect('/batePapo');
 });
 
-
+// Inicialização do servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
