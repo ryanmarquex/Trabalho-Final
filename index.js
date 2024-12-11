@@ -58,8 +58,31 @@ app.get('/', (req, res) => {
 // Cadastro de usuários
 app.post('/cadastrarUsuario', (req, res) => {
     const { name, email, birthDate, nickname, password } = req.body;
+
+    // Validação dos campos
     if (!name || !email || !birthDate || !nickname || !password) {
         return res.status(400).send('Todos os campos são obrigatórios!');
+    }
+
+    if (!/^[a-zA-ZÀ-ÿ ]+$/.test(name)) {
+        return res.status(400).send('O nome deve conter apenas letras e espaços.');
+    }
+
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        return res.status(400).send('O email fornecido é inválido.');
+    }
+
+    const birthDateObj = new Date(birthDate);
+    if (isNaN(birthDateObj.getTime()) || birthDateObj > new Date()) {
+        return res.status(400).send('A data de nascimento é inválida.');
+    }
+
+    if (nickname.length < 3 || nickname.length > 20) {
+        return res.status(400).send('O nickname deve ter entre 3 e 20 caracteres.');
+    }
+
+    if (password.length < 6) {
+        return res.status(400).send('A senha deve ter pelo menos 6 caracteres.');
     }
 
     const userExists = data.users.some(u => u.nickname === nickname);
@@ -170,3 +193,4 @@ app.post('/postarMensagem', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
