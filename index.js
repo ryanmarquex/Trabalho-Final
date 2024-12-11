@@ -20,10 +20,10 @@ app.use(session({
     secret: 'chatroom_secret',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 30 * 60 * 1000 } // Sessão válida por 30 minutos
+    cookie: { maxAge: 30 * 60 * 1000 } // sessao 30 minutos
 }));
 
-// Página inicial com Cadastro de Usuários e Login
+// pagina de cadastro com o html dentro do arquivo js
 app.get('/', (req, res) => {
     if (req.session.loggedIn) {
         return res.redirect('/menu');
@@ -55,11 +55,11 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Cadastro de usuários
+// cadastro de usuarios
 app.post('/cadastrarUsuario', (req, res) => {
     const { name, email, birthDate, nickname, password } = req.body;
 
-    // Validação dos campos
+    // validação dos campos
     if (!name || !email || !birthDate || !nickname || !password) {
         return res.status(400).send('Todos os campos são obrigatórios!');
     }
@@ -98,7 +98,7 @@ app.post('/cadastrarUsuario', (req, res) => {
     `);
 });
 
-// Login
+// login
 app.post('/login', (req, res) => {
     const { nickname, password } = req.body;
     const user = data.users.find(u => u.nickname === nickname && u.password === password);
@@ -116,7 +116,7 @@ app.post('/login', (req, res) => {
     }
 });
 
-// Menu
+// menu
 app.get('/menu', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/');
@@ -131,7 +131,7 @@ app.get('/menu', (req, res) => {
     `);
 });
 
-// Visualizar usuários cadastrados
+// usuários cadastrados
 app.get('/usuariosCadastrados', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/');
@@ -145,13 +145,13 @@ app.get('/usuariosCadastrados', (req, res) => {
     `);
 });
 
-// Logout
+// logout
 app.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
-// Bate-papo
+// mensagem
 app.get('/batePapo', (req, res) => {
     if (!req.session.loggedIn) {
         return res.redirect('/');
@@ -189,7 +189,7 @@ app.post('/postarMensagem', (req, res) => {
     res.redirect('/batePapo');
 });
 
-// Inicialização do servidor
+// servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
